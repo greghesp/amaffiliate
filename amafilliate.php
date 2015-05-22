@@ -14,108 +14,142 @@ Author URI: http://greghesp.com
 
 defined( 'ABSPATH' ) or die( 'Plugin file cannot be accessed directly.' );
  
-add_action('admin_init', 'amafilliate_plugin_menu');
- 
-function amafilliate_plugin_menu() {
+add_action( 'admin_menu', 'wpaa_add_admin_menu' );
+add_action( 'admin_init', 'wpaa_settings_init' );
+add_action('init','find_location');
+add_action('the_post','everypost_func');
+
+
+function wpaa_add_admin_menu(  ) { 
+
+    add_options_page( 'Amaffiliate', 'Amaffiliate', 'manage_options', 'amaffiliate', 'amaffiliate_options_page' );
+
+}
+
+
+function wpaa_settings_init(  ) { 
+
+    register_setting( 'pluginPage', 'wpaa_settings' );
+
     add_settings_section(
-        'general_settings_section',
-        'Amafilliate Options',
-        'amafilliate_plugin_options',
-        'general'
-        );
- 
-    add_settings_field(
-        'public_key',
-        'Public Key',
-        'public_key_callback',
-        'general',
-        'general_settings_section'
-        );
- 
-    add_settings_field(
-        'private_key',
-        'Private Key',
-        'private_key_callback',
-        'general',
-        'general_settings_section'
-        );
- 
-    add_settings_field(
-        'affiliate_id_uk',
-        'Affiliate ID - UK',
-        'affiliate_id_uk_callback',
-        'general',
-        'general_settings_section'
-        );
- 
-    add_settings_field(
-        'affiliate_id_us',
-        'Affiliate ID - US',
-        'affiliate_id_us_callback',
-        'general',
-        'general_settings_section'
-        );
- 
-    register_setting(
-        'general',
-        'public_key'
-        );
- 
-    register_setting(
-        'general',
-        'private_key'
-        );
- 
-    register_setting(
-        'general',
-        'affiliate_id_uk'
-        );
- 
-    register_setting(
-        'general',
-        'affiliate_id_us'
-        );
+        'wpaa_pluginPage_section', 
+        __( '', 'wordpress' ), 
+        'wpaa_settings_section_callback', 
+        'pluginPage'
+    );
+
+    add_settings_field( 
+        'wpaa_public_key', 
+        __( 'Amazon Public Key', 'wordpress' ), 
+        'wpaa_public_key_render', 
+        'pluginPage', 
+        'wpaa_pluginPage_section' 
+    );
+
+    add_settings_field( 
+        'wpaa_private_key', 
+        __( 'Amazon Private Key', 'wordpress' ), 
+        'wpaa_private_key_render', 
+        'pluginPage', 
+        'wpaa_pluginPage_section' 
+    );
+
+    add_settings_field( 
+        'wpaa_affiliate_id_uk', 
+        __( 'Amazon.co.uk Affiliate ID', 'wordpress' ), 
+        'wpaa_affiliate_id_uk_render', 
+        'pluginPage', 
+        'wpaa_pluginPage_section' 
+    );
+
+    add_settings_field( 
+        'wpaa_affiliate_id_us', 
+        __( 'Amazon.com Affiliate ID', 'wordpress' ), 
+        'wpaa_affiliate_id_us_render', 
+        'pluginPage', 
+        'wpaa_pluginPage_section' 
+    );
+
+
 }
- 
-function public_key_callback()
-{
-    ?><input type="text" name="public_key" value="<?php echo get_option(public_key); ?>"/><?php
+
+
+function wpaa_public_key_render(  ) { 
+
+    $options = get_option( 'wpaa_settings' );
+    ?>
+    <input type='text' name='wpaa_settings[wpaa_public_key]' value='<?php echo $options['wpaa_public_key']; ?>'>
+    <?php
+
 }
- 
-function private_key_callback()
-{
-    ?><input type="text" name="private_key" value="<?php echo get_option(private_key); ?>"/><?php
+
+
+function wpaa_private_key_render(  ) { 
+
+    $options = get_option( 'wpaa_settings' );
+    ?>
+    <input type='text' name='wpaa_settings[wpaa_private_key]' value='<?php echo $options['wpaa_private_key']; ?>'>
+    <?php
+
 }
- 
-function affiliate_id_uk_callback()
-{
-    ?><input type="text" name="affiliate_id_uk" value="<?php echo get_option(affiliate_id_uk); ?>"/><?php
+
+
+function wpaa_affiliate_id_uk_render(  ) { 
+
+    $options = get_option( 'wpaa_settings' );
+    ?>
+    <input type='text' name='wpaa_settings[wpaa_affiliate_id_uk]' value='<?php echo $options['wpaa_affiliate_id_uk']; ?>'>
+    <?php
+
 }
- 
-function affiliate_id_us_callback()
-{
-    ?><input type="text" name="affiliate_id_us" value="<?php echo get_option(affiliate_id_us); ?>"/><?php
+
+
+function wpaa_affiliate_id_us_render(  ) { 
+
+    $options = get_option( 'wpaa_settings' );
+    ?>
+    <input type='text' name='wpaa_settings[wpaa_affiliate_id_us]' value='<?php echo $options['wpaa_affiliate_id_us']; ?>'>
+    <?php
+
 }
- 
-function amafilliate_plugin_options() {
-    echo "Enter your Amazon Affiliate settings below to get started.
+
+
+function wpaa_settings_section_callback(  ) { 
+
+    echo __( 'Enter your Amazon Affiliate settings below to get started.
  
     <h3>How to use Amafilliate</h3>
-    <p>If your product has a generic ASIN, use the custom field 'generic-asin'.<br/>
-    If your product has a UK specific ASIN, use the custom field 'uk-asin'<br/>
-    If your product has a US specific ASIN, use the custom field 'us-asin'</br>
-    If you want to link to a site other than Amazon, use the custom field 'other-link'</p>
+    <p>If your product has a generic ASIN, use the custom field \'generic-asin\'.<br/>
+    If your product has a UK specific ASIN, use the custom field \'uk-asin\'<br/>
+    If your product has a US specific ASIN, use the custom field \'us-asin\'</br>
+    If you want to link to a site other than Amazon, use the custom field \'other-link\'</p>
  
     <p>To call the price, wishlist and Amazon link, use the following variables in your theme: <br/>
-        \$amaffiliate_price for the Price<br/>
-        \$amaffiliate_url for the Amazon URL<br/>
-        \$amaffiliate_wishlist for the Amazon Wishlist</p>
- 
- 
-    ";
+        $amaffiliate_price for the Price<br/>
+        $amaffiliate_url for the Amazon URL<br/>
+        $amaffiliate_wishlist for the Amazon Wishlist</p>', 'wordpress' );
+
 }
- 
-add_action('init','find_location');
+
+
+function amaffiliate_options_page(  ) { 
+
+    ?>
+    <form action='options.php' method='post'>
+        
+        <h2>Amaffiliate Settings</h2>
+        
+        <?php
+        settings_fields( 'pluginPage' );
+        do_settings_sections( 'pluginPage' );
+        submit_button();
+        ?>
+        
+    </form>
+    <?php
+
+}
+
  
 function find_location() {
    
@@ -186,11 +220,13 @@ function aws_signed_request($region, $params, $public_key, $private_key, $associ
  
 function get_aws_details($region,$itemid)
 {
+    $options = get_option( 'wpaa_settings' );
+
  
-    $public_key = get_option(public_key);
-    $private_key = get_option(private_key);
-    $associate_tag_uk = get_option(affiliate_id_uk);
-    $associate_tag_us = get_option(affiliate_id_us);
+    $public_key = $options['wpaa_public_key'];
+    $private_key = $options['wpaa_private_key'];
+    $associate_tag_uk = $options['wpaa_affiliate_id_uk'];
+    $associate_tag_us = $options['wpaa_affiliate_id_us'];
  
     if($region == "co.uk")
        {
@@ -323,5 +359,5 @@ function everypost_func($obj){
     
 }
 
-add_action('the_post','everypost_func');
+
 ?>
