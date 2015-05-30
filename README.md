@@ -5,7 +5,7 @@ Amaffiliate is a custom Wordpress plugin I developed for Amazon Affiliates when 
 Amaffiliate is still in development, and as such certain functions do not exist, and the code is quite raw.  It does however work well.  
 
 ### Version
-0.5
+0.5.1
 
 ### Installation
 

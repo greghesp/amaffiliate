@@ -1,14 +1,14 @@
 <?php
 /**
  * @package Amafilliate
- * @version 0.5
+ * @version 0.5.1
  */
 /*
 Plugin Name: Amafilliate
 Plugin URI: https://github.com/greghesp/amaffiliate
 Description: Manually control your Amazon affiliate links between the USA and UK
 Author: Greg Hesp
-Version: 0.5
+Version: 0.5.1
 Author URI: http://greghesp.com
 */
 
