@@ -255,6 +255,11 @@ function get_aws_details($region,$itemid)
     } else {
         if (isset($pxml->Items->Item->Offers->Offer->OfferListing->Price->FormattedPrice)) {
             $formatprice = $pxml->Items->Item->Offers->Offer->OfferListing->Price->FormattedPrice;
+
+            if (isset($pxml->Items->Item->Offers->Offer->OfferListing->SalePrice->FormattedPrice)) {
+                $formatprice = $pxml->Items->Item->Offers->Offer->OfferListing->SalePrice->FormattedPrice;
+            }
+
             $wishlisturl = $pxml->Items->Item->ItemLinks->ItemLink[0]->URL;
             $producturl = $pxml->Items->Item->DetailPageURL;
         }
